@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Shape App</title>
+</head>
+    <body>
+        
+        <!-- List of the shapes and their IDs-->
+        <div>
+            <ul>
+                <li>1: Square</li>
+                <li>2: Circle</li>
+                <li>3: Rectangle</li>
+            </ul>
+        </div>
+
+        <!-- [User Input] Allows the user to list what shape they would like drawn by giving the appropriate ID -->
+        <div>
+            <h2>Enter in the ID of the shape you would like to fetch</h2>
+            <input type="text" id="shapeID" />
+
+            <!-- Submits the form and starts the GET request by calling findShape() -->
+            <input type="button" value="Draw Shape" onclick="findShape();" />
+        </div>
+
+        <!-- Dedicated spot for shape to be drawn once ID has been fetched -->
+        <div style="margin-top:20px">
+            <canvas id="shapeOutput" width="150" height="150"></canvas>
+        </div>
+
+        <!------ Start JS ------ >
+
+        <!-- Our JQuery CDN (CDN just for testing, replace with framework later) -->
+        <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+
+        <script>
+            var uri = 'api/shapes';
+
+            // Fetches the ID from the user via the textfield "shapeID" and then submits a GET request to our API returning the associated shape name
+            function findShape() {
+
+                // Fetch the value of the textfield with the id 'shapeID'.
+                var id = $('#shapeID').val();
+
+                // Send a GET request to our controller
+                $.getJSON(uri + '/' + id)
+
+                    // If the data has been successfully fetched, call the draw function with the given shape name
+                    .done(function (data) {
+                        draw(data.Name);
+                    })
+
+                    // Fail handler
+                    .fail(function (jqXHR, textStatus, err) {
+                        console.log("ERROR: " + err);
+                    });
+            }
+
+            // Draws a Square, Circle or Rectangle in the canvas "shapeOutput" depending on whether the function is fed "Square", "Circle" or "Rectangle"
+            function draw(shapeName) {
+
+                var context = document.getElementById("shapeOutput").getContext('2d');
+                context.clearRect(0, 0, 150, 150);
+
+                switch (shapeName) {
+                    case "Square":
+                        context.fillStyle = "red";
+                        context.fillRect(0, 0, 100, 100);
+                        break;
+                    case "Circle":
+                        context.fillStyle = "blue";
+                        context.beginPath();
+                        context.arc(50, 50, 50, 0, 2 * Math.PI);
+                        context.stroke();
+                        context.fill();
+                        break;
+                    case "Rectangle":
+                        context.fillStyle = "green";
+                        context.fillRect(0, 0, 150, 100);
+                        break;
+                    default:
+                        console.log("Invalid Shape name given: " + shapeName);
+                }
+            }
+        </script>
+    </body>
+</html>
